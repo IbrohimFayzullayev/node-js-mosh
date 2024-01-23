@@ -11,6 +11,12 @@ const courseSchema = new mongoose.Schema({
   tags: [String],
   date: { type: Date, default: Date.now },
   isPublished: Boolean,
+  price: {
+    type: Number,
+    required: function () {
+      return this.isPublished;
+    },
+  },
 });
 
 const Course = mongoose.model("Course", courseSchema);
@@ -20,7 +26,8 @@ async function createCourse() {
     // name: "Angular Course",
     author: "Mosh",
     tags: ["angular", "frontend"],
-    isPublished: true,
+    isPublished: false,
+    // price:15
   });
 
   try {
