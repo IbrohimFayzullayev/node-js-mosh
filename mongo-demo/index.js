@@ -6,9 +6,17 @@ mongoose
   .catch((err) => console.log(`Couldn't connect to Mongodb...`, err));
 
 const courseSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, minlength: 5, maxlength: 25 },
   author: String,
   tags: [String],
+  category: {
+    type: String,
+    required: true,
+    enum: ["web", "mobile", "backend"],
+    lowercase: true,
+    // uppercase:true,
+    trim: true,
+  },
   date: { type: Date, default: Date.now },
   isPublished: Boolean,
   price: {
@@ -16,6 +24,10 @@ const courseSchema = new mongoose.Schema({
     required: function () {
       return this.isPublished;
     },
+    min: 10,
+    max: 200,
+    get: (v) => Math.round(v),
+    set: (v) => Math.round(v),
   },
 });
 
@@ -23,18 +35,19 @@ const Course = mongoose.model("Course", courseSchema);
 
 async function createCourse() {
   const course = new Course({
-    // name: "Angular Course",
+    name: "Angular Course",
     author: "Mosh",
-    tags: ["angular", "frontend"],
+    category: "Web",
+    tags: ["angular"],
     isPublished: false,
-    // price:15
+    price: 15.8,
   });
 
   try {
     const result = await course.save();
     console.log(result);
   } catch (ex) {
-    console.log(ex.message);
+    for (field in ex.errors) console.log(ex.errors[field].message);
   }
 }
 // createCourse();
